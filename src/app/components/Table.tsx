@@ -1,10 +1,10 @@
 "use client";
 
 import { Suspense, useState } from "react";
-import TableBody from "./TableBody";
-import { createClientComponent } from "../helpers/createClientComponent";
+import { importServerComponent } from "../helpers/importServerComponent";
+import type { TableBodyProps } from "./TableBody";
 
-const TableBodyClient = createClientComponent(TableBody);
+const TableBodyClient = importServerComponent<TableBodyProps>("./TableBody");
 
 export function Table() {
   const [page, setPage] = useState(1);

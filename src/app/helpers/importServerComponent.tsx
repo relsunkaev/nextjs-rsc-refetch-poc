@@ -1,6 +1,7 @@
 import { cache, use, useEffect, useState } from "react";
 // @ts-ignore
 import { createFromFetch } from "next/dist/compiled/react-server-dom-webpack/client.browser";
+import { dirname, join } from "path";
 
 const getBaseUrl = () => {
   if (typeof window !== "undefined") return ""; // browser should use relative url
@@ -19,6 +20,22 @@ const fetchComponent = cache(
     )
 );
 
+function getCallerPath() {
+  try {
+    throw Error();
+  } catch (error) {
+    return (
+      "." +
+      (error as Error).stack
+        ?.split("\n")[3] // 0 is Error, 1 is getCallerPath, 2 is the call site, 3 is the caller
+        .split(")/")[1] // remove webpack prefix
+        .split(":")[0] // remove line number
+        .split("app") // remove app prefix
+        .pop()
+    );
+  }
+}
+
 type SerializableValue =
   | string
   | number
@@ -31,12 +48,10 @@ interface SerializableArray extends Array<SerializableValue> {}
 
 interface SerializableObject extends Record<string, SerializableValue> {}
 
-export function createClientComponent<
-  Props extends SerializableObject
->(ServerComponent: {
-  (props: Props): JSX.Element | Promise<JSX.Element>;
-  url: string;
-}) {
+export function importServerComponent<Props extends SerializableObject>(
+  path: string
+) {
+  const rootPath = "./" + join(dirname(getCallerPath()), path);
   const ClientComponent = (props: Props) => {
     const [mounted, setMounted] = useState(false);
 
@@ -45,7 +60,7 @@ export function createClientComponent<
     if (!mounted) return null;
 
     const serializedProps = JSON.stringify(props);
-    return use(fetchComponent(ServerComponent.url, serializedProps));
+    return use(fetchComponent(rootPath, serializedProps));
   };
   return ClientComponent;
 }

@@ -1,5 +1,4 @@
 import { NextRequest } from "next/server";
-import { relative } from "path";
 import React from "react";
 // @ts-ignore
 import { renderToReadableStream } from "next/dist/compiled/react-server-dom-webpack/server.edge";
@@ -11,12 +10,7 @@ export async function POST(request: NextRequest) {
   if (!path) throw new Error("Path is required");
 
   const Component = await import(
-    "../components/" +
-      relative(import.meta.url, path)
-        .split("/")
-        .slice(3)
-        .join("/")
-        .replace(/\.\w$/, "")
+    "../components" + path.split("./components").pop()
   ).then((module) => module.default);
 
   return new Response(
