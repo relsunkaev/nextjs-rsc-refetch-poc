@@ -51,7 +51,7 @@ interface SerializableObject extends Record<string, SerializableValue> {}
 export function importServerComponent<Props extends SerializableObject>(
   path: string
 ) {
-  const rootPath = "./" + join(dirname(getCallerPath()), path);
+  const rootPath = join(dirname(getCallerPath()), path);
   const ClientComponent = (props: Props) => {
     const [mounted, setMounted] = useState(false);
 

@@ -4,7 +4,7 @@ import { Suspense, useState } from "react";
 import { importServerComponent } from "../helpers/importServerComponent";
 import type { TableBodyProps } from "./TableBody";
 
-const TableBodyClient = importServerComponent<TableBodyProps>("./TableBody");
+const TableBody = importServerComponent<TableBodyProps>("./TableBody");
 
 export function Table() {
   const [page, setPage] = useState(1);
@@ -42,7 +42,7 @@ export function Table() {
             </tbody>
           }
         >
-          <TableBodyClient page={page} pageSize={pageSize} />
+          <TableBody page={page} pageSize={pageSize} />
         </Suspense>
       </table>
       <div className="w-full flex justify-between">

@@ -9,8 +9,11 @@ export async function POST(request: NextRequest) {
 
   if (!path) throw new Error("Path is required");
 
+  // including layout.tsx in the bundle would cause issues
+  // as webpack will include it and this file will be exporting
+  // "metadata" which is not allowed
   const Component = await import(
-    "../components" + path.split("./components").pop()
+    /* webpackExclude: /layout.(j|t)sx?/ */ "../" + path.replace("@/", "")
   ).then((module) => module.default);
 
   return new Response(
